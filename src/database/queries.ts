@@ -223,23 +223,20 @@ export async function getCoordinates(station_name: number) {
 
 export async function getBlueSky(
   station_name: number,
-  start_date: string,
-  end_date: string
+  start_date: Date,
+  end_date: Date
 ) {
   return prisma.station_data.findMany({
     where: {
       station_name: station_name,
       datetime: {
         gte: start_date,
-        lte: end_date + " 23:59:59",
+        lte: end_date,
       },
     },
     select: {
-      cldc: true,
       datetime: true,
-    },
-    orderBy: {
-      datetime: "asc",
+      cldc: true,
     },
   });
 }
