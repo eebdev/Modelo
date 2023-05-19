@@ -177,7 +177,11 @@ tr:hover {
   background-color: lightblue;
 }
 
-#chart {
+.buttons-chart {
   width: 100%;
-  height: 400px;
+  margin-top: 80px;
+}
+
+.buttons {
+  margin-bottom: 20px;
 }

@@ -2,123 +2,197 @@ import { StationData } from "@ctypes/types";
 import { useStationFetch } from "@hooks/useStationFetch";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Chart, LineController, CategoryScale, LinearScale, PointElement, LineElement, Tooltip } from 'chart.js';
+import {
+  Chart,
+  LineController,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+} from "chart.js";
+import { getBlueSky } from "@database/queries";
 
-Chart.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Tooltip);
- 
+Chart.register(
+  LineController,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip
+);
 
 function createGraph(data: StationData) {
   renderStationData(data);
+  return (
+    <div className="buttons text-center">
+      <button
+        value={"sunHours"}
+        className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+        onClick={handleClick}
+      >
+        Sun Hours
+          </button>
+          <button
+              value={"temperature"}
+              className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+              onClick={handleClick}
+          >
+              Temperature
+          </button>
+          <button
+              value={"humidity"}
+              className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+              onClick={handleClick}
+          >
+              Humidity
+          </button>
+            
+    </div>
+  );
 }
+
+const handleClick = (event: any) => {
+  const router = useRouter();
+  const { id } = router.query;
+  const buttonValue = event.target.value;
+  switch (buttonValue) {
+    case "sunHours":
+      // blue sky api call
+          break;
+      case "temperature":
+            // temperature api call
+          break;
+      case "humidity":
+            // humidity api call
+          break;
+      
+    default:
+      console.log("default");
+      break;
+  }
+};
 
 function renderStationData(data: StationData) {
-    const canvas = document.getElementById('chart') as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-        const existingChart = Chart.getChart(ctx);
-        if (existingChart) {
-            existingChart.destroy();
-        }
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-              datasets: [
-                {
-                  label: 'Mock Data',
-                  data: [12, 19, 3, 5, 2, 3, 9],
-                  borderColor: 'rgba(255, 99, 132, 1)',
-                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                  borderWidth: 1,
-                },
-              ],
-            },
-          options: {
-            interaction: {
-              intersect: false,
-              mode: 'index',
-              },
-              aspectRatio: 2,
-              animation: {
-                duration: 2000,
-                easing: 'easeOutQuint',
-                delay: 0,
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                },
-              },
-              plugins: {
-                tooltip: {
-                  position: 'nearest',
-                  callbacks: {
-                    label: (context: any) => {
-                      return `${context.dataset.label}: ${context.parsed.y}`;
-                    },
-                  },
-                },
-              },
-            },
-
-        }); 
-    } else {
-        console.error('Cannot create chart, canvas context is null');
+  const canvas = document.getElementById("chart") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+      existingChart.destroy();
     }
-    
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+        ],
+        datasets: [
+          {
+            label: "Mock Data",
+            data: [12, 19, 3, 5, 2, 3, 9],
+            borderColor: "rgba(255, 99, 132, 1)",
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        interaction: {
+          intersect: false,
+          mode: "index",
+        },
+        aspectRatio: 2,
+        animation: {
+          duration: 2000,
+          easing: "easeOutQuint",
+          delay: 0,
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+        plugins: {
+          tooltip: {
+            position: "nearest",
+            callbacks: {
+              label: (context: any) => {
+                return `${context.dataset.label}: ${context.parsed.y}`;
+              },
+            },
+          },
+        },
+      },
+    });
+  } else {
+    console.error("Cannot create chart, canvas context is null");
+  }
 }
 
-
-    
-
 export default function StationPage() {
-    const router = useRouter();
-    const { id } = router.query;
-    const [startDate, setStartDate] = useState<string>();
-    const [endDate, setEndDate] = useState<string>();
-    const data = useStationFetch(id as string, startDate, endDate);
+  const router = useRouter();
+  const { id } = router.query;
+  const [startDate, setStartDate] = useState<string>();
+  const [endDate, setEndDate] = useState<string>();
+  const data = useStationFetch(id as string, startDate, endDate);
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        setStartDate(formData.get("startDate") as string);
-        setEndDate(formData.get("endDate") as string);
-    }
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    setStartDate(formData.get("startDate") as string);
+    setEndDate(formData.get("endDate") as string);
+  }
 
-    return (
-        <>
-            <div className="bg-white min-h-screen p-6">
-                <>{data ? createGraph(data) : <p>Loading station data...</p>}</>
-                <div className="chart-container flex flex-wrap justify-center" style={{ 'width': '100vw', 'height': 400, 'marginTop': 100 }}>
-                    <canvas id="chart"></canvas>
-                </div>
-                <form className="flex flex-col items-center space-y-4 mt-6" onSubmit={handleSubmit}>
-                    <div className="flex items-center space-x-2">
-                        <label htmlFor="startDate">Start date:</label>
-                        <input
-                            className="p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
-                            type="date"
-                            id="startDate"
-                            name="startDate"
-                        />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <label htmlFor="endDate">End date:</label>
-                        <input
-                            className="p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
-                            type="date"
-                            id="endDate"
-                            name="endDate"
-                        />
-                    </div>
-                    <button
-                        className="w-32 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
-                        type="submit"
-                    >
-                        Submit
-                    </button>
-                </form>
-            </div>
-        </>
-    );
+  return (
+    <>
+      <div className="bg-white min-h-screen p-6">
+        <div className="buttons-chart flex flex-col flex-wrap">
+          {data ? createGraph(data) : <h1>Loading...</h1>}
+          <div
+            className="chart-container flex justify-center"
+            style={{ height: 400 }}
+          >
+            <canvas id="chart"></canvas>
+          </div>
+        </div>
+
+        <form
+          className="flex flex-col items-center space-y-4 mt-6"
+          onSubmit={handleSubmit}
+        >
+          <div className="flex items-center space-x-2">
+            <label htmlFor="startDate">Start date:</label>
+            <input
+              className="p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
+              type="date"
+              id="startDate"
+              name="startDate"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <label htmlFor="endDate">End date:</label>
+            <input
+              className="p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
+              type="date"
+              id="endDate"
+              name="endDate"
+            />
+          </div>
+          <button
+            className="w-32 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+            type="submit"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+    </>
+  );
 }
