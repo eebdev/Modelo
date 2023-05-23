@@ -137,15 +137,15 @@ export async function getStationData(station_name: number) {
 
 export async function getStationDataByDateRange(
   station_name: number,
-  start_date: string,
-  end_date: string
+  start_date: Date,
+  end_date: Date
 ) {
   return prisma.station_data.findMany({
     where: {
       station_name: station_name,
       datetime: {
         gte: start_date,
-        lte: end_date + " 23:59:59",
+        lte: end_date,
       },
     },
   });
@@ -239,4 +239,44 @@ export async function getBlueSky(
       cldc: true,
     },
   });
+}
+
+export async function getHumidity(
+  station_name: number,
+  start_date: Date,
+  end_date: Date
+) {
+  return prisma.station_data.findMany({
+    where: {
+      station_name: station_name,
+      datetime: {
+        gte: start_date,
+        lte: end_date,
+      },
+    },
+    select: {
+      datetime: true,
+      dewp: true,
+    },
+  });
+}
+
+export async function getTemperature(
+  station_name: number,
+  start_date: Date,
+  end_date: Date
+) {
+    return prisma.station_data.findMany({
+      where: {
+        station_name: station_name,
+        datetime: {
+          gte: start_date,
+          lte: end_date,
+        },
+      },
+      select: {
+        datetime: true,
+        temp: true,
+      },
+    });
 }

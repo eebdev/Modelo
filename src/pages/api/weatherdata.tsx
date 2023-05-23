@@ -98,16 +98,19 @@ export default async function dataReceiver(
             ) {
                 console.log("Date range provided");
                 try {
+                    const start_date = new Date(req.query.start_date as string);
+                    const end_date = new Date(req.query.end_date as string);
+
                     const data = await getStationDataByDateRange(
                         id,
-                        req.query.start_date as string,
-                        req.query.end_date as string
+                        start_date,
+                        end_date
                     );
                     res
                         .status(200)
                         .json({message: "Data fetched successfully", data: data});
                 } catch (error) {
-                    res.status(400).json({message: "Something went wrong"});
+                    res.status(400).json({message: "Something went wrong", error: error});
                 }
             } else {
                 try {

@@ -3,8 +3,8 @@ import { StationData } from "@ctypes/types";
 
 export function useStationFetch(
   station_name: string,
-  start_date?: string,
-  end_date?: string
+  start_date?: Date,
+  end_date?: Date
 ): StationData | undefined {
   const [data, setData] = useState<StationData>();
   let url = "";

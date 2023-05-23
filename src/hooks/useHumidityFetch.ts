@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 
-export function useBlueSkyFetch(station_name: string) {
+export function useHumidityFetch(station_name: string) {
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {
         if (!station_name) return undefined;
 
-        let url = `/api/bluesky?id=${station_name}`;
+        let url = `/api/humidity?id=${station_name}`;
 
         const fetchData = async () => {
             const res = await fetch(url);

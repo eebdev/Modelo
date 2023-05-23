@@ -12,6 +12,9 @@ import {
   Tooltip,
 } from "chart.js";
 import { getBlueSky } from "@database/queries";
+import { useBlueSkyFetch } from "@hooks/useBlueSkyFetch";
+import { useHumidityFetch } from "@hooks/useHumidityFetch";
+import { useTemperatureFetch } from "@hooks/useTemperatureFetch";
 
 Chart.register(
   LineController,
@@ -22,8 +25,32 @@ Chart.register(
   Tooltip
 );
 
-function createGraph(data: StationData) {
-  renderStationData(data);
+function CreateGraph({ id }: { id: string }) {
+  const today = new Date();
+  const three_days_ago = new Date();
+  three_days_ago.setDate(today.getDate() - 3);
+  
+  const data = useStationFetch(id, three_days_ago, today);
+
+  const handleClick = (e: any) => {
+    const { value } = e.target;
+    switch (value) {
+      case "sunHours":
+        renderStationData(data, "Cloud Coverage");
+        break;
+      case "temperature":
+        renderStationData(data, "Temperature");
+        break;
+      case "humidity":
+        renderStationData(data, "Humidity");
+        break;
+      default:
+        break;
+    }
+  };
+  
+
+
   return (
     <div className="buttons text-center">
       <button
@@ -52,28 +79,10 @@ function createGraph(data: StationData) {
   );
 }
 
-const handleClick = (event: any) => {
-  const router = useRouter();
-  const { id } = router.query;
-  const buttonValue = event.target.value;
-  switch (buttonValue) {
-    case "sunHours":
-      // blue sky api call
-          break;
-      case "temperature":
-            // temperature api call
-          break;
-      case "humidity":
-            // humidity api call
-          break;
-      
-    default:
-      console.log("default");
-      break;
-  }
-};
-
-function renderStationData(data: StationData) {
+function renderStationData(
+  data: Array<StationData>,
+  label: string,
+) {
   const canvas = document.getElementById("chart") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
   if (ctx) {
@@ -81,22 +90,41 @@ function renderStationData(data: StationData) {
     if (existingChart) {
       existingChart.destroy();
     }
+
+    const labels = data.map((item) =>
+      new Date(item.datetime).toLocaleString()
+    );
+
+    var chartData: Array<number> = [];
+
+    switch (label) {
+      case "Cloud Coverage":
+        chartData = data.map((item) => item.cldc);
+        break;
+      case "Temperature":
+        chartData = data.map((item) => item.temp);
+        break;
+      case "Humidity":
+        chartData = data.map((item) => {
+          const dewPoint = Number(item.dewp);
+          const temperature = Number(item.temp);
+          const relativeHumidity = 100 * (Math.exp((17.625 * dewPoint) / (243.04 + dewPoint)) / Math.exp((17.625 * temperature) / (243.04 + temperature)));
+          return relativeHumidity.toPrecision(3);
+        });
+        break;
+      default:
+        break;
+    }
+
+
     new Chart(ctx, {
       type: "line",
       data: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-        ],
+        labels: labels,
         datasets: [
           {
-            label: "Mock Data",
-            data: [12, 19, 3, 5, 2, 3, 9],
+            label: label,
+            data: chartData,
             borderColor: "rgba(255, 99, 132, 1)",
             backgroundColor: "rgba(255, 99, 132, 0.2)",
             borderWidth: 1,
@@ -136,25 +164,18 @@ function renderStationData(data: StationData) {
   }
 }
 
+
 export default function StationPage() {
   const router = useRouter();
   const { id } = router.query;
   const [startDate, setStartDate] = useState<string>();
   const [endDate, setEndDate] = useState<string>();
-  const data = useStationFetch(id as string, startDate, endDate);
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    setStartDate(formData.get("startDate") as string);
-    setEndDate(formData.get("endDate") as string);
-  }
 
   return (
     <>
       <div className="bg-white min-h-screen p-6">
         <div className="buttons-chart flex flex-col flex-wrap">
-          {data ? createGraph(data) : <h1>Loading...</h1>}
+          {id ? <CreateGraph id={id as string} /> : <h1>Loading...</h1>}
           <div
             className="chart-container flex justify-center"
             style={{ height: 400 }}
@@ -162,36 +183,6 @@ export default function StationPage() {
             <canvas id="chart"></canvas>
           </div>
         </div>
-
-        <form
-          className="flex flex-col items-center space-y-4 mt-6"
-          onSubmit={handleSubmit}
-        >
-          <div className="flex items-center space-x-2">
-            <label htmlFor="startDate">Start date:</label>
-            <input
-              className="p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
-              type="date"
-              id="startDate"
-              name="startDate"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <label htmlFor="endDate">End date:</label>
-            <input
-              className="p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
-              type="date"
-              id="endDate"
-              name="endDate"
-            />
-          </div>
-          <button
-            className="w-32 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
-            type="submit"
-          >
-            Submit
-          </button>
-        </form>
       </div>
     </>
   );
