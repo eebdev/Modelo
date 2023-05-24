@@ -5,7 +5,6 @@ import { calculateMissingValue } from "@helpers/missingData";
 const prisma = new PrismaClient();
 
 export async function saveStationData(data: WeatherData) {
-  console.log(data);
   const datetime = new Date(`${data.DATE} ${data.TIME}`);
 
   await prisma.station_data.create({

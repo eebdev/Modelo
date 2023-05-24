@@ -6,7 +6,7 @@ export function useStationFetch(
   start_date?: Date,
   end_date?: Date
 ): StationData | undefined {
-  let datapunten = [];
+  const [data, setData] = useState<StationData>();
   let url = "";
 
   if (start_date && end_date) {
@@ -14,16 +14,18 @@ export function useStationFetch(
   } else {
     url = `/api/weatherdata?id=${station_name}`;
   }
-
+  
+  useEffect(() => {
     if (!station_name) return undefined;
 
     const fetchData = async () => {
       const res = await fetch(url);
       const data = await res.json();
-      datapunten = data.data;
+      setData(data.data);
     };
 
     fetchData();
+  }, [station_name]);
 
-  return datapunten;
+  return data;
 }
