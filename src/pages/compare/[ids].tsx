@@ -2,97 +2,188 @@ import { StationData } from "@ctypes/types";
 import { useStationFetch } from "@hooks/useStationFetch";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import {
+  Chart,
+  LineController,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+} from "chart.js";
+import { getBlueSky } from "@database/queries";
+import { useBlueSkyFetch } from "@hooks/useBlueSkyFetch";
+import { useHumidityFetch } from "@hooks/useHumidityFetch";
+import { useTemperatureFetch } from "@hooks/useTemperatureFetch";
 
-function renderStationData(data: StationData[]) {
+Chart.register(
+  LineController,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip
+);
+
+function CreateGraph({ ids }: { ids: string[] }) {
+  const today = new Date();
+  const three_days_ago = new Date();
+  three_days_ago.setDate(today.getDate() - 3);
+  
+  const handleClick = (e: any, id: string) => {
+    const { value } = e.target;
+    const data = useStationFetch(id, three_days_ago, today);
+    switch (value) {
+      case "sunHours":
+        renderStationData(data, "Cloud Coverage", id);
+        break;
+      case "temperature":
+        renderStationData(data, "Temperature", id);
+        break;
+      case "humidity":
+        renderStationData(data, "Humidity", id);
+        break;
+      default:
+        break;
+    }
+  };
+  
   return (
-      <div className="flex flex-wrap justify-center">
-        {data.map((station, index) => (
-            <div key={index} className="w-full sm:w-1/2 lg:w-1/3 p-4">
-              <table className="min-w-full divide-y divide-gray-200 shadow-lg rounded-md">
-                <thead className="head-lightblue">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs text-black uppercase font-bold tracking-wider">
-                    Property
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs text-black uppercase font-bold tracking-wider">
-                    Value
-                  </th>
-                </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                {Object.entries(station).map(([key, value]) => (
-                    <tr key={key}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {key}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {value}
-                      </td>
-                    </tr>
-                ))}
-                </tbody>
-              </table>
+    <div>
+      {ids.map((id) => {
+        return (
+          <div key={id}>
+            <h2>Station ID: {id}</h2>
+            <div className="buttons text-center">
+              <button
+                value={"sunHours"}
+                className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+                onClick={(e) => handleClick(e, id)}
+              >
+                Sun Hours
+              </button>
+              <button
+                value={"temperature"}
+                className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+                onClick={(e) => handleClick(e, id)}
+              >
+                Temperature
+              </button>
+              <button
+                value={"humidity"}
+                className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+                onClick={(e) => handleClick(e, id)}
+              >
+                Humidity
+              </button>
             </div>
-        ))}
-      </div>
+            <div className="chart-container" style={{ height: 400 }}>
+              <canvas id={`chart-${id}`}></canvas>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
-export default function StationsComparePage() {
+function renderStationData(
+  data: Array<StationData>,
+  label: string,
+  id: string,
+) {
+  const canvas = document.getElementById(`chart-${id}`) as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+
+    const labels = data.map((item) =>
+      new Date(item.datetime).toLocaleString()
+    );
+
+    var chartData: Array<number> = [];
+
+    switch (label) {
+      case "Cloud Coverage":
+        chartData = data.map((item) => item.cldc);
+        break;
+      case "Temperature":
+        chartData = data.map((item) => item.temp);
+        break;
+      case "Humidity":
+        chartData = data.map((item) => {
+          const dewPoint = Number(item.dewp);
+          const temperature = Number(item.temp);
+          const relativeHumidity = 100 * (Math.exp((17.625 * dewPoint) / (243.04 + dewPoint)) / Math.exp((17.625 * temperature) / (243.04 + temperature)));
+          return relativeHumidity.toPrecision(3);
+        });
+        break;
+      default:
+        break;
+    }
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: label,
+            data: chartData,
+            borderColor: "rgba(255, 99, 132, 1)",
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        interaction: {
+          intersect: false,
+          mode: "index",
+        },
+        aspectRatio: 2,
+        animation: {
+          duration: 2000,
+          easing: "easeOutQuint",
+          delay: 0,
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+        plugins: {
+          tooltip: {
+            position: "nearest",
+            callbacks: {
+              label: (context: any) => {
+                return `${context.dataset.label}: ${context.parsed.y}`;
+              },
+            },
+          },
+        },
+      },
+    });
+  } else {
+    console.error("Cannot create chart, canvas context is null");
+  }
+}
+
+export default function StationPage() {
   const router = useRouter();
   const { ids } = router.query;
-  const [startDate, setStartDate] = useState<string>();
-  const [endDate, setEndDate] = useState<string>();
-  const data: StationData[] = [];
-
-  const stationIds = ids ? (ids as string).split("-") : [];
-  for (const id of stationIds) {
-    const stationData = useStationFetch(id, startDate, endDate);
-    if (stationData) {
-      data.push(stationData);
-    }
-  }
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    setStartDate(formData.get("startDate") as string);
-    setEndDate(formData.get("endDate") as string);
-  }
-
+  const idArray = ids ? (ids as string).split('-') : [];
+  
   return (
-      <>
-        <div className="bg-white min-h-screen p-6">
-          <div className="stations-container">
-            <>{data ? renderStationData(data) : <p>Loading station data...</p>}</>
-          </div>
-          <form className="flex flex-col items-center space-y-4" onSubmit={handleSubmit}>
-            <div className="flex items-center space-x-2">
-              <label htmlFor="startDate">Start date:</label>
-              <input
-                  className="p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
-                  type="date"
-                  id="startDate"
-                  name="startDate"
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <label htmlFor="endDate">End date:</label>
-              <input
-                  className="p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
-                  type="date"
-                  id="endDate"
-                  name="endDate"
-              />
-            </div>
-            <button
-                className="iwa-button w-32 p-2 text-lg font-semibold rounded-md focus:outline-none"
-                type="submit"
-            >
-              Submit
-            </button>
-          </form>
+    <>
+      <div className="bg-white min-h-screen p-6">
+        <div className="buttons-chart flex flex-col flex-wrap">
+          {idArray.length ? <CreateGraph ids={idArray} /> : <h1>Loading...</h1>}
         </div>
-      </>
+      </div>
+    </>
   );
 }
