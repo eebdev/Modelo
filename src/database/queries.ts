@@ -111,7 +111,7 @@ export async function updateMissingStationData(station_name: number) {
             station_data_id: missingData.missing_data_id,
           },
           data: {
-            [missingData.column_name]: calculatedValue,
+            [missingData.column_name.toLowerCase()]: calculatedValue,
           },
         });
 

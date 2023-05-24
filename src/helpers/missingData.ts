@@ -29,11 +29,17 @@ export function calculateMissingValue(
     case "PRCP":
     case "SNDP":
     case "CLDC":
-    case "WNDDIR":
       // Voor de numerieke kolommen, return de gemiddelde waarde
       const numericValues = values.map((value) => parseFloat(value as string));
       const sum = numericValues.reduce((acc, value) => acc + value, 0);
       return sum / numericValues.length;
+
+    case "WNDDIR":
+    // whole integer
+      const windDirValues = values.map((value) => parseInt(value as string));
+      const windDirSum = windDirValues.reduce((acc, value) => acc + value, 0);
+      return Math.round(windDirSum / windDirValues.length);
+    
 
     case "FRSHTT":
       // Voor de FRSHTT kolom, return de meest voorkomende waarde. Dit is omdat de FRSHTT een binary string is.
