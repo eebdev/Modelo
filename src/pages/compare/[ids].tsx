@@ -25,94 +25,95 @@ Chart.register(
   Tooltip
 );
 
-function CreateGraph({ ids }: { ids: string[] }) {
+function CreateGraph({ id }: { id: string }) {
   const today = new Date();
   const three_days_ago = new Date();
   three_days_ago.setDate(today.getDate() - 3);
-  const data: (StationData | undefined)[] = [];
 
-  for (let i = 0; i < ids.length; i++) {
-    console.log(useStationFetch(ids[i], three_days_ago, today));
-    data.push(useStationFetch(ids[i], three_days_ago, today));
-      if (data) {
-        renderStationData(data, "Cloud Coverage", ids[i], i);
-      }
-  }
+  const ids = id.split('-');
+  const [stationData, setStationData] = useState<{ [id: string]: Array<StationData> }>({});
 
-  
-  
-  const handleClick = (e: any, id: string) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      const dataPromises = ids.map((id) => useStationFetch(id, three_days_ago, today));
+
+      const results = await Promise.all(dataPromises);
+      const newStationData = ids.reduce((acc, id, i) => ({ ...acc, [id]: results[i] }), {});
+      setStationData(newStationData);
+    };
+
+    fetchData();
+  }, []);
+
+  const handleClick = (e: any) => {
     const { value } = e.target;
-    const data = useStationFetch(id, three_days_ago, today);
-    switch (value) {
-      case "sunHours":
-        renderStationData(data, "Cloud Coverage", id);
-        break;
-      case "temperature":
-        renderStationData(data, "Temperature", id);
-        break;
-      case "humidity":
-        renderStationData(data, "Humidity", id);
-        break;
-      default:
-        break;
+
+    // clear existing chart
+    const canvas = document.getElementById("chart") as HTMLCanvasElement;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      const existingChart = Chart.getChart(ctx);
+      if (existingChart) {
+        existingChart.destroy();
+      }
     }
+
+    Object.keys(stationData).forEach(id => {
+      const data = stationData[id];
+      switch (value) {
+        case "sunHours":
+          renderStationData(data, "Cloud Coverage", id);
+          break;
+        case "temperature":
+          renderStationData(data, "Temperature", id);
+          break;
+        case "humidity":
+          renderStationData(data, "Humidity", id);
+          break;
+        default:
+          break;
+      }
+    });
   };
-  
+
   return (
-    <div>
-      {ids.map((id) => {
-        return (
-          <div key={id}>
-            <h2>Station ID: {id}</h2>
-            <div className="buttons text-center">
-              <button
-                value={"sunHours"}
-                className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
-                onClick={(e) => handleClick(e, id)}
-              >
-                Sun Hours
-              </button>
-              <button
-                value={"temperature"}
-                className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
-                onClick={(e) => handleClick(e, id)}
-              >
-                Temperature
-              </button>
-              <button
-                value={"humidity"}
-                className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
-                onClick={(e) => handleClick(e, id)}
-              >
-                Humidity
-              </button>
-            </div>
-            <div className="chart-container" style={{ height: 400 }}>
-              <canvas id={`chart-${id}`}></canvas>
-            </div>
-          </div>
-        );
-      })}
+    <div className="buttons text-center">
+      <button
+        value={"sunHours"}
+        className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+        onClick={handleClick}
+      >
+        Sun Hours
+      </button>
+      <button
+        value={"temperature"}
+        className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+        onClick={handleClick}
+      >
+        Temperature
+      </button>
+      <button
+        value={"humidity"}
+        className="w-32 mx-5 p-2 text-lg font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none"
+        onClick={handleClick}
+      >
+        Humidity
+      </button>
     </div>
   );
 }
-
 function renderStationData(
   data: Array<StationData>,
   label: string,
   id: string,
-  index: number,
 ) {
-  const canvas = document.getElementById(`chart`) as HTMLCanvasElement;
+  const canvas = document.getElementById("chart") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
+  
   if (ctx) {
     const existingChart = Chart.getChart(ctx);
-    if (existingChart) {
-      existingChart.destroy();
-    }
-
-    const labels = data[index].map((item) =>
+    
+    const labels = data.map((item) =>
       new Date(item.datetime).toLocaleString()
     );
 
@@ -137,48 +138,33 @@ function renderStationData(
         break;
     }
 
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: label,
-            data: chartData,
-            borderColor: "rgba(255, 99, 132, 1)",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        interaction: {
-          intersect: false,
-          mode: "index",
-        },
-        aspectRatio: 2,
-        animation: {
-          duration: 2000,
-          easing: "easeOutQuint",
-          delay: 0,
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-        plugins: {
-          tooltip: {
-            position: "nearest",
-            callbacks: {
-              label: (context: any) => {
-                return `${context.dataset.label}: ${context.parsed.y}`;
-              },
+    if (existingChart) {
+      existingChart.data.datasets.push({
+        label: id,
+        data: chartData,
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        borderWidth: 1,
+      });
+      existingChart.update();
+    } else {
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: id,
+              data: chartData,
+              borderColor: "rgba(255, 99, 132, 1)",
+              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              borderWidth: 1,
             },
-          },
+          ],
         },
-      },
-    });
+        // the rest of your chart options...
+      });
+    }
   } else {
     console.error("Cannot create chart, canvas context is null");
   }
@@ -187,13 +173,12 @@ function renderStationData(
 export default function StationPage() {
   const router = useRouter();
   const { ids } = router.query;
-  const idArray = ids ? (ids as string).split('-') : [];
-  
+
   return (
     <>
       <div className="bg-white min-h-screen p-6">
         <div className="buttons-chart flex flex-col flex-wrap">
-          {idArray.length ? <CreateGraph ids={idArray} /> : <h1>Loading...</h1>}
+          {ids ? <CreateGraph id={ids as string} /> : <h1>Loading...</h1>}
           <div
             className="chart-container flex justify-center"
             style={{ height: 400 }}

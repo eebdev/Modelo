@@ -12,9 +12,6 @@ import {
   Tooltip,
 } from "chart.js";
 import { getBlueSky } from "@database/queries";
-import { useBlueSkyFetch } from "@hooks/useBlueSkyFetch";
-import { useHumidityFetch } from "@hooks/useHumidityFetch";
-import { useTemperatureFetch } from "@hooks/useTemperatureFetch";
 
 Chart.register(
   LineController,
@@ -30,30 +27,38 @@ function CreateGraph({ id }: { id: string }) {
   const three_days_ago = new Date();
   three_days_ago.setDate(today.getDate() - 3);
   
-  const data = useStationFetch(id, three_days_ago, today);
+  const [data, setData] = useState<StationData[] | null>(null);
 
-    if (data) {
-      renderStationData(data, "Cloud Coverage")
+  useEffect(() => {
+    async function fetchData() {
+      const stationData = await useStationFetch(id, three_days_ago, today);
+      setData(stationData);
+      if (stationData) {
+        renderStationData(stationData, "Cloud Coverage")
+      }
     }
+
+    fetchData();
+  }, []);
 
   const handleClick = (e: any) => {
     const { value } = e.target;
-    switch (value) {
-      case "sunHours":
-        renderStationData(data, "Cloud Coverage");
-        break;
-      case "temperature":
-        renderStationData(data, "Temperature");
-        break;
-      case "humidity":
-        renderStationData(data, "Humidity");
-        break;
-      default:
-        break;
+    if(data) {
+      switch (value) {
+        case "sunHours":
+          renderStationData(data, "Cloud Coverage");
+          break;
+        case "temperature":
+          renderStationData(data, "Temperature");
+          break;
+        case "humidity":
+          renderStationData(data, "Humidity");
+          break;
+        default:
+          break;
+      }
     }
   };
-  
-
 
   return (
     <div className="buttons text-center">
@@ -172,8 +177,6 @@ function renderStationData(
 export default function StationPage() {
   const router = useRouter();
   const { id } = router.query;
-  const [startDate, setStartDate] = useState<string>();
-  const [endDate, setEndDate] = useState<string>();
 
   return (
     <>

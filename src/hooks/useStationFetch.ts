@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
 import { StationData } from "@ctypes/types";
 
-export function useStationFetch(
+export async function useStationFetch (
   station_name: string,
   start_date?: Date,
   end_date?: Date
-): StationData | undefined {
-  const [data, setData] = useState<StationData>();
+): Promise<StationData | undefined> {
   let url = "";
 
   if (start_date && end_date) {
@@ -14,18 +12,8 @@ export function useStationFetch(
   } else {
     url = `/api/weatherdata?id=${station_name}`;
   }
-  
-  useEffect(() => {
-    if (!station_name) return undefined;
 
-    const fetchData = async () => {
-      const res = await fetch(url);
-      const data = await res.json();
-      setData(data.data);
-    };
-
-    fetchData();
-  }, [station_name]);
-
-  return data;
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.data;
 }
