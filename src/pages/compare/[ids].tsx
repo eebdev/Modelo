@@ -1,7 +1,7 @@
 import { StationData } from "@ctypes/types";
 import { useStationFetch } from "@hooks/useStationFetch";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Chart,
   LineController,
@@ -29,6 +29,17 @@ function CreateGraph({ ids }: { ids: string[] }) {
   const today = new Date();
   const three_days_ago = new Date();
   three_days_ago.setDate(today.getDate() - 3);
+  const data: (StationData | undefined)[] = [];
+
+  for (let i = 0; i < ids.length; i++) {
+    console.log(useStationFetch(ids[i], three_days_ago, today));
+    data.push(useStationFetch(ids[i], three_days_ago, today));
+      if (data) {
+        renderStationData(data, "Cloud Coverage", ids[i], i);
+      }
+  }
+
+  
   
   const handleClick = (e: any, id: string) => {
     const { value } = e.target;
@@ -91,8 +102,9 @@ function renderStationData(
   data: Array<StationData>,
   label: string,
   id: string,
+  index: number,
 ) {
-  const canvas = document.getElementById(`chart-${id}`) as HTMLCanvasElement;
+  const canvas = document.getElementById(`chart`) as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
   if (ctx) {
     const existingChart = Chart.getChart(ctx);
@@ -100,7 +112,7 @@ function renderStationData(
       existingChart.destroy();
     }
 
-    const labels = data.map((item) =>
+    const labels = data[index].map((item) =>
       new Date(item.datetime).toLocaleString()
     );
 
@@ -182,6 +194,12 @@ export default function StationPage() {
       <div className="bg-white min-h-screen p-6">
         <div className="buttons-chart flex flex-col flex-wrap">
           {idArray.length ? <CreateGraph ids={idArray} /> : <h1>Loading...</h1>}
+          <div
+            className="chart-container flex justify-center"
+            style={{ height: 400 }}
+          >
+            <canvas id="chart"></canvas>
+          </div>
         </div>
       </div>
     </>

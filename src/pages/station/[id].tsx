@@ -1,7 +1,7 @@
 import { StationData } from "@ctypes/types";
 import { useStationFetch } from "@hooks/useStationFetch";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Chart,
   LineController,
@@ -31,6 +31,10 @@ function CreateGraph({ id }: { id: string }) {
   three_days_ago.setDate(today.getDate() - 3);
   
   const data = useStationFetch(id, three_days_ago, today);
+
+    if (data) {
+      renderStationData(data, "Cloud Coverage")
+    }
 
   const handleClick = (e: any) => {
     const { value } = e.target;
