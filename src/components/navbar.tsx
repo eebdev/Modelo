@@ -7,7 +7,7 @@ export default function Navbar() {
             className="text-gray-100 text-base xl:text-xl no-underline hover:no-underline font-bold"
             href="#"
           >
-            <i className="fas fa-moon text-blue-400 pr-3"></i> Modello Cerveza
+            <i className="fas fa-moon text-modelo-blue pr-3"></i> Modello Cerveza
           </a>
         </div>
         <div className="w-1/2 pr-0">
@@ -99,9 +99,9 @@ export default function Navbar() {
             <li className="mr-6 my-2 md:my-0">
               <a
                 href="#"
-                className="block py-1 md:py-3 pl-1 align-middle text-blue-400 no-underline hover:text-gray-100 border-b-2 border-blue-400 hover:border-blue-400"
+                className="block py-1 md:py-3 pl-1 align-middle text-modelo-blue no-underline hover:text-gray-100 border-b-2 border-modelo-blue hover:border-modelo-blue"
               >
-                <i className="fas fa-home fa-fw mr-3 text-blue-400"></i>
+                <i className="fas fa-home fa-fw mr-3 text-modelo-blue"></i>
                 <span className="pb-1 md:pb-0 text-sm">Home</span>
               </a>
             </li>

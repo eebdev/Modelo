@@ -3,7 +3,7 @@ import { Icon, LatLngExpression } from "leaflet";
 import { MapContainer, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import useMarkerCluster from "../hooks/useMarkerCluster";
+// import useMarkerCluster from "../hooks/useMarkerCluster";
 import { Coordinates } from "@ctypes/types";
 
 const CoordinatesMap = ({
@@ -13,18 +13,18 @@ const CoordinatesMap = ({
 }) => {
   const [coordinates, setCoordinates] = useState<Coordinates>([]);
 
-  useEffect(() => {
-    const fetchCoordinates = () => {
-      fetch("/api/coordinates")
-        .then((response) => response.json())
-        .then((data) => setCoordinates(data));
-    };
+  // useEffect(() => {
+  //   const fetchCoordinates = () => {
+  //     fetch("/api/coordinates")
+  //       .then((response) => response.json())
+  //       .then((data) => setCoordinates(data));
+  //   };
 
-    fetchCoordinates();
-    const interval = setInterval(fetchCoordinates, 1000);
+  //   fetchCoordinates();
+  //   const interval = setInterval(fetchCoordinates, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const weatherStationIcon = new L.Icon({
     iconUrl: "/WeatherIcon.svg",
@@ -34,7 +34,7 @@ const CoordinatesMap = ({
   });
 
   return (
-    <div style={{ height: "100vh", width: "100%" }}>
+    <div className=" h-80 ">
       <MapContainer
         center={defaultCenter}
         zoom={13}
@@ -59,7 +59,7 @@ const MapMarkers = ({
   coordinates: Coordinates;
   icon: Icon;
 }) => {
-  useMarkerCluster(coordinates, icon);
+  // useMarkerCluster(coordinates, icon);
   return null;
 };
 
