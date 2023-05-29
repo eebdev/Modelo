@@ -6,15 +6,15 @@ export default function Home() {
         <input
           type="text"
           placeholder="Username"
-          className="bg-gray-700 py-1 px-1"
+          className="bg-gray-100 py-1 px-1 rounded-md text-gray-900"
         />
         <input
           type="password"
           placeholder="Password"
-          className="bg-gray-700 py-1 px-1"
+          className="bg-gray-100 py-1 px-1 rounded-md text-gray-900"
         />
         <button
-          className="border-2 border-gray-400 text-xl py-1 hover:bg-gray-400 hover:text-gray-900 duration-300"
+          className="border-2 border-gray-100 rounded-md text-xl py-1 hover:bg-gray-100 hover:text-gray-900 duration-200"
           type="submit"
         >
           Login

@@ -1,20 +1,55 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
+
+const links = [
+  {
+    text: "Home",
+    href: "/",
+  },
+  {
+    text: "Tasks",
+    href: "/tasks",
+  },
+  {
+    text: "Messages",
+    href: "/messages",
+  },
+  {
+    text: "Analytics",
+    href: "/analytics",
+  },
+  {
+    text: "Payments",
+    href: "/payments",
+  },
+];
+
 export default function Navbar() {
+  const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+
+  const router = useRouter();
+  const path = router.pathname;
+
+  const prepend = "/dashboard";
+
   return (
     <nav id="header" className="bg-gray-900 fixed w-full z-10 top-0 shadow">
       <div className="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3 md:pb-0">
         <div className="w-1/2 pl-2 md:pl-0">
-          <a
+          <Link
             className="text-gray-100 text-base xl:text-xl no-underline hover:no-underline font-bold"
-            href="#"
+            href="/dashboard"
           >
-            <i className="fas fa-moon text-modelo-blue pr-3"></i> Modello Cerveza
-          </a>
+            Modello Cerveza
+          </Link>
         </div>
         <div className="w-1/2 pr-0">
           <div className="flex relative float-right">
             <div className="relative text-sm text-gray-100">
               <button
-                id="userButton"
+                onClick={() => setOpenUserMenu(!openUserMenu)}
                 className="flex items-center focus:outline-none mr-3"
               >
                 <img
@@ -37,46 +72,49 @@ export default function Navbar() {
                   </g>
                 </svg>
               </button>
-              <div
-                id="userMenu"
-                className="bg-gray-900 rounded shadow-md mt-2 absolute top-0 right-0 min-w-full overflow-auto z-30 invisible"
-              >
-                <ul className="list-reset">
-                  <li>
-                    <a
-                      href="#"
-                      className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
-                    >
-                      My account
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
-                    >
-                      Notifications
-                    </a>
-                  </li>
-                  <li>
-                    <hr className="border-t mx-2 border-gray-400" />
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
-                    >
-                      Logout
-                    </a>
-                  </li>
-                </ul>
-              </div>
+              {openUserMenu && (
+                <div
+                  id="userMenu"
+                  className="bg-gray-900 rounded shadow-md mt-2 absolute top-8 right-0 min-w-full overflow-auto z-30"
+                >
+                  <ul className="list-reset">
+                    <li>
+                      <a
+                        href="#"
+                        className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+                      >
+                        My account
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+                      >
+                        Notifications
+                      </a>
+                    </li>
+                    <li>
+                      <hr className="border-t mx-2 border-gray-400" />
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+                      >
+                        Logout
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="block lg:hidden pr-4">
               <button
+                onClick={() => setOpenMenu(!openMenu)}
                 id="nav-toggle"
-                className="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-100 hover:border-teal-500 appearance-none focus:outline-none"
+                className="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-100 appearance-none focus:outline-none"
               >
                 <svg
                   className="fill-current h-3 w-3"
@@ -88,6 +126,20 @@ export default function Navbar() {
                 </svg>
               </button>
             </div>
+            {openMenu && (
+              <div className="lg:hidden absolute top-8 z-50">
+                <div className="flex flex-col bg-gray-900 w-screen px-2 py-1 gap-4">
+                  {links.map((link) => (
+                    <Link
+                      className="bg-gray-900 text-gray-100"
+                      href={prepend + link.href}
+                    >
+                      {link.text}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -96,51 +148,21 @@ export default function Navbar() {
           id="nav-content"
         >
           <ul className="list-reset lg:flex flex-1 items-center px-4 md:px-0">
-            <li className="mr-6 my-2 md:my-0">
-              <a
-                href="#"
-                className="block py-1 md:py-3 pl-1 align-middle text-modelo-blue no-underline hover:text-gray-100 border-b-2 border-modelo-blue hover:border-modelo-blue"
-              >
-                <i className="fas fa-home fa-fw mr-3 text-modelo-blue"></i>
-                <span className="pb-1 md:pb-0 text-sm">Home</span>
-              </a>
-            </li>
-            <li className="mr-6 my-2 md:my-0">
-              <a
-                href="#"
-                className="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-pink-400"
-              >
-                <i className="fas fa-tasks fa-fw mr-3"></i>
-                <span className="pb-1 md:pb-0 text-sm">Tasks</span>
-              </a>
-            </li>
-            <li className="mr-6 my-2 md:my-0">
-              <a
-                href="#"
-                className="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-purple-400"
-              >
-                <i className="fa fa-envelope fa-fw mr-3"></i>
-                <span className="pb-1 md:pb-0 text-sm">Messages</span>
-              </a>
-            </li>
-            <li className="mr-6 my-2 md:my-0">
-              <a
-                href="#"
-                className="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-green-400"
-              >
-                <i className="fas fa-chart-area fa-fw mr-3"></i>
-                <span className="pb-1 md:pb-0 text-sm">Analytics</span>
-              </a>
-            </li>
-            <li className="mr-6 my-2 md:my-0">
-              <a
-                href="#"
-                className="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-red-400"
-              >
-                <i className="fa fa-wallet fa-fw mr-3"></i>
-                <span className="pb-1 md:pb-0 text-sm">Payments</span>
-              </a>
-            </li>
+            {links.map((link) => (
+              <li className="mr-6 my-2 md:my-0">
+                <Link
+                  className={`block py-1 md:py-3 pl-1 align-middle no-underline border-b-2 hover:border-modelo-yellow hover:text-modelo-yellow duration-200 ${
+                    path === prepend + link.href ||
+                    path === prepend + link.href.replace("/", "")
+                      ? "border-modelo-yellow text-modelo-yellow"
+                      : "text-gray-100 border-transparent"
+                  }`}
+                  href={prepend + link.href}
+                >
+                  {link.text}
+                </Link>
+              </li>
+            ))}
           </ul>
 
           <div className="relative pull-right pl-4 pr-4 md:pr-0">

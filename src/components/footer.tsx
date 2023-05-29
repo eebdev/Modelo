@@ -1,12 +1,14 @@
 export default function Footer() {
   return (
-    <footer className="bg-modelo-blue border-t border-modelo-red shadow">
+    <footer className="border-t border-modelo-yellow shadow">
       <div className="container max-w-md mx-auto flex py-8">
         <div className="w-full mx-auto flex flex-wrap">
           <div className="flex w-full md:w-1/2 ">
             <div className="px-8">
               <h3 className="font-bold text-modelo-yellow">About</h3>
-              <p className="py-4 text-modelo-brown text-sm">IWA Copyright 2023</p>
+              <p className="py-4 text-modelo-brown text-sm">
+                IWA Copyright 2023
+              </p>
             </div>
           </div>
 
