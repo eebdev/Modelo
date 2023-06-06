@@ -1,12 +1,23 @@
 import Navbar from "@components/navbar";
 import Footer from "@components/footer";
+import Graph from "@components/graph";
 import dynamic from "next/dynamic";
+import { MouseEvent } from "react";
+import { useState } from "react";
 
 const CoordinatesMap = dynamic(() => import("@components/CoordinatesMap"), {
   ssr: false,
 });
 
 export default function Home() {
+  const [monkeyClicked, setMonkeyClicked] = useState(false);
+  const [selectedGraph, setSelectedGraph] = useState(null);
+
+  function handleMoneky(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    setMonkeyClicked(true);
+    // setSelectedGraph(event.target);
+  }
+
   return (
     <div className="font-sans leading-normal tracking-normal h-screen">
       <Navbar />
@@ -15,7 +26,7 @@ export default function Home() {
         <div className="w-full px-4 md:px-0 md:mt-8 mb-16 text-modelo-brown leading-normal h-full flex">
           <div className="flex-1">
             {/* <!--Console Content--> */}
-            <div className="grid grid-cols-3 gap-4 h-1/3">
+            <div className="grid grid-cols-3 gap-4 h-1/3 mb-10">
               <div className="p-3">
                 {/* <!--Graph Card--> */}
                 <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
@@ -23,6 +34,24 @@ export default function Home() {
                     <h5 className="font-bold uppercase text-modelo-blue">
                       Graph
                     </h5>
+                  </div>
+                  <div className="p-3">
+                    <Graph width={270} height={180}/>
+                  </div>
+                </div>
+                {/* <!--/Graph Card--> */}
+              </div>
+              <div className="p-3">
+                {/* <!--Graph Card--> */}
+                <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
+                  <div className="border-b border-modelo-red p-3 flex place-content-between">
+                    <h5 className="font-bold uppercase text-modelo-blue">
+                      Graph
+                    </h5>
+                    <button onClick={handleMoneky}>Moneky</button>
+                  </div>
+                  <div className="p-3">
+                    <Graph width={270} height={180}/>
                   </div>
                 </div>
                 {/* <!--/Graph Card--> */}
@@ -35,16 +64,8 @@ export default function Home() {
                       Graph
                     </h5>
                   </div>
-                </div>
-                {/* <!--/Graph Card--> */}
-              </div>
-              <div className="p-3">
-                {/* <!--Graph Card--> */}
-                <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
-                  <div className="border-b border-modelo-red p-3">
-                    <h5 className="font-bold uppercase text-modelo-blue">
-                      Graph
-                    </h5>
+                  <div className="p-3">
+                    <Graph width={270} height={180}/>
                   </div>
                 </div>
                 {/* <!--/Graph Card--> */}
