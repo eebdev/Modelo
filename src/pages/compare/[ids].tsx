@@ -162,7 +162,33 @@ function renderStationData(
             },
           ],
         },
-        // the rest of your chart options...
+        options: {
+          interaction: {
+            intersect: false,
+            mode: "index",
+          },
+          aspectRatio: 2,
+          animation: {
+            duration: 2000,
+            easing: "easeOutQuint",
+            delay: 0,
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+          plugins: {
+            tooltip: {
+              position: "nearest",
+              callbacks: {
+                label: (context: any) => {
+                  return `${context.dataset.label}: ${context.parsed.y}`;
+                },
+              },
+            },
+          },
+        },
       });
     }
   } else {
