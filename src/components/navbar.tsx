@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { signOut } from "firebase/auth";
+import { clientCredentials } from "@config/firebase";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const links = [
   {
@@ -26,6 +31,10 @@ const links = [
 ];
 
 export default function Navbar() {
+  const app = initializeApp(clientCredentials);
+  const auth = getAuth(app);
+  const [user, loading, error] = useAuthState(auth);
+
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
 
@@ -33,6 +42,12 @@ export default function Navbar() {
   const path = router.pathname;
 
   const prepend = "/dashboard";
+
+  function logout() {
+    signOut(auth).then(() => {
+      router.push("/");
+    });
+  }
 
   return (
     <nav id="header" className="bg-gray-900 fixed w-full z-10 top-0 shadow">
@@ -58,7 +73,7 @@ export default function Navbar() {
                   alt="Avatar of User"
                 />{" "}
                 <span className="hidden md:inline-block text-gray-100">
-                  Hi, User
+                  Hi, {user?.displayName}
                 </span>
                 <svg
                   className="pl-2 h-2 fill-current text-gray-100"
@@ -98,12 +113,12 @@ export default function Navbar() {
                       <hr className="border-t mx-2 border-gray-400" />
                     </li>
                     <li>
-                      <a
-                        href="#"
+                      <button
+                        onClick={logout}
                         className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
                       >
                         Logout
-                      </a>
+                      </button>
                     </li>
                   </ul>
                 </div>

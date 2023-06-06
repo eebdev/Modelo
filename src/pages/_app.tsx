@@ -1,6 +1,6 @@
-import 'tailwindcss/tailwind.css';
+import "tailwindcss/tailwind.css";
 
-import 'leaflet/dist/leaflet.css';
+import "leaflet/dist/leaflet.css";
 import type { AppProps } from "next/app";
 
 export default function App({ Component, pageProps }: AppProps) {

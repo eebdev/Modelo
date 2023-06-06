@@ -2,21 +2,32 @@ import Navbar from "@components/navbar";
 import Footer from "@components/footer";
 import Graph from "@components/graph";
 import dynamic from "next/dynamic";
-import { MouseEvent } from "react";
-import { useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { clientCredentials } from "@config/firebase";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const CoordinatesMap = dynamic(() => import("@components/CoordinatesMap"), {
   ssr: false,
 });
 
 export default function Home() {
-  const [monkeyClicked, setMonkeyClicked] = useState(false);
-  const [selectedGraph, setSelectedGraph] = useState(null);
+  const app = initializeApp(clientCredentials);
+  const auth = getAuth(app);
 
-  function handleMoneky(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
-    setMonkeyClicked(true);
-    // setSelectedGraph(event.target);
-  }
+  const router = useRouter();
+
+  const [user, loading, error] = useAuthState(auth);
+
+  useEffect(() => {
+    if (user == null) {
+      router.push("/");
+    }
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="font-sans leading-normal tracking-normal h-screen">
@@ -36,7 +47,7 @@ export default function Home() {
                     </h5>
                   </div>
                   <div className="p-3">
-                    <Graph width={270} height={180}/>
+                    <Graph width={270} height={180} />
                   </div>
                 </div>
                 {/* <!--/Graph Card--> */}
@@ -48,10 +59,9 @@ export default function Home() {
                     <h5 className="font-bold uppercase text-modelo-blue">
                       Graph
                     </h5>
-                    <button onClick={handleMoneky}>Moneky</button>
                   </div>
                   <div className="p-3">
-                    <Graph width={270} height={180}/>
+                    <Graph width={270} height={180} />
                   </div>
                 </div>
                 {/* <!--/Graph Card--> */}
@@ -65,7 +75,7 @@ export default function Home() {
                     </h5>
                   </div>
                   <div className="p-3">
-                    <Graph width={270} height={180}/>
+                    <Graph width={270} height={180} />
                   </div>
                 </div>
                 {/* <!--/Graph Card--> */}
