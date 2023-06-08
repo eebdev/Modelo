@@ -13,16 +13,16 @@ const CoordinatesMap = dynamic(() => import("@components/CoordinatesMap"), {
   ssr: false,
 });
 
-export default function Home() {
-  const app = initializeApp(clientCredentials);
-  const auth = getAuth(app);
+const app = initializeApp(clientCredentials);
+const auth = getAuth(app);
 
+export default function Home() {
   const router = useRouter();
 
   const [user, loading, error] = useAuthState(auth);
 
   useEffect(() => {
-    if (user == null) {
+    if (!loading && user == null) {
       router.push("/");
     }
   }, []);

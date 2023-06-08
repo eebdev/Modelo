@@ -50,7 +50,10 @@ export default function Navbar() {
   }
 
   return (
-    <nav id="header" className="bg-gray-900 fixed w-full z-10 top-0 shadow">
+    <nav
+      id="header"
+      className="bg-gray-900 fixed w-full z-[10000] top-0 shadow px-2 md:px-8"
+    >
       <div className="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3 md:pb-0">
         <div className="w-1/2 pl-2 md:pl-0">
           <Link
@@ -73,7 +76,7 @@ export default function Navbar() {
                   alt="Avatar of User"
                 />{" "}
                 <span className="hidden md:inline-block text-gray-100">
-                  Hi, {user?.displayName}
+                  Hi, {user?.email}
                 </span>
                 <svg
                   className="pl-2 h-2 fill-current text-gray-100"
@@ -115,7 +118,7 @@ export default function Navbar() {
                     <li>
                       <button
                         onClick={logout}
-                        className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+                        className="px-4 py-2 flex text-gray-100 hover:bg-gray-800 no-underline hover:no-underline w-full"
                       >
                         Logout
                       </button>

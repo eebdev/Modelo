@@ -1,21 +1,28 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { clientCredentials } from "@config/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+
+const app = initializeApp(clientCredentials);
+const auth = getAuth(app);
 
 export default function Home() {
   const router = useRouter();
   const [error, setError] = useState("");
 
-  const app = initializeApp(clientCredentials);
+  const [user, loading, errorTemp] = useAuthState(auth);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const email = e.currentTarget.email.value;
     const password = e.currentTarget.password.value;
 
-    const auth = getAuth(app);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
