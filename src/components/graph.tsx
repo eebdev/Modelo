@@ -1,6 +1,5 @@
-import exp from 'constants';
 import React from 'react';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = [
     { name: 'Page A', uv: 4000, pv: 2400, amt: 2400 },
@@ -12,21 +11,28 @@ const data = [
     { name: 'Page G', uv: 3490, pv: 4300, amt: 2100 },
 ];
 
-interface GraphProps {
-    width: number,
-    height: number
-  }
-
-const Graph: React.FC<GraphProps> = ({ width, height }) => {
+const Graph = () => {
     return (
-        <LineChart width={width} height={height} data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-            <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-        </LineChart>
-    )
+        <div className='h-60'>
+            <ResponsiveContainer>
+                <LineChart
+                    data={data}
+                    margin={{
+                        top: 5,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
+                    }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" stroke="#ffffff" />
+                    <YAxis stroke="#ffffff" />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="pv" stroke="#ffffff" />
+                    <Line type="monotone" dataKey="uv" stroke="#ffffff" />
+                </LineChart>
+            </ResponsiveContainer>
+        </div>
+    );
 }
 
 

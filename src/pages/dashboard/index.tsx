@@ -8,6 +8,7 @@ import { getAuth } from "firebase/auth";
 import { clientCredentials } from "@config/firebase";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import Card from "@components/Card";
 
 const CoordinatesMap = dynamic(() => import("@components/CoordinatesMap"), {
   ssr: false,
@@ -21,90 +22,54 @@ export default function Home() {
 
   const [user, loading, error] = useAuthState(auth);
 
-  useEffect(() => {
-    if (!loading && user == null) {
-      router.push("/");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!loading && user == null) {
+  //     router.push("/");
+  //   }
+  // }, []);
 
   if (loading) return <div>Loading...</div>;
 
+
   return (
-    <div className="font-sans leading-normal tracking-normal h-screen">
+    <div className="font-sans leading-normal tracking-normal h-screen flex flex-col">
       <Navbar />
-      {/* <!--Container--> */}
-      <div className="container w-full mx-auto pt-20 h-1/8">
-        <div className="w-full px-4 md:px-0 md:mt-8 mb-16 text-modelo-brown leading-normal h-full flex">
-          <div className="flex-1">
-            {/* <!--Console Content--> */}
-            <div className="grid grid-cols-3 gap-4 h-1/3 mb-10">
-              <div className="p-3">
-                {/* <!--Graph Card--> */}
-                <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
-                  <div className="border-b border-modelo-red p-3">
-                    <h5 className="font-bold uppercase text-modelo-blue">
-                      Graph
-                    </h5>
-                  </div>
-                  <div className="p-3">
-                    <Graph width={270} height={180} />
-                  </div>
-                </div>
-                {/* <!--/Graph Card--> */}
-              </div>
-              <div className="p-3">
-                {/* <!--Graph Card--> */}
-                <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
-                  <div className="border-b border-modelo-red p-3 flex place-content-between">
-                    <h5 className="font-bold uppercase text-modelo-blue">
-                      Graph
-                    </h5>
-                  </div>
-                  <div className="p-3">
-                    <Graph width={270} height={180} />
-                  </div>
-                </div>
-                {/* <!--/Graph Card--> */}
-              </div>
-              <div className="p-3">
-                {/* <!--Graph Card--> */}
-                <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
-                  <div className="border-b border-modelo-red p-3">
-                    <h5 className="font-bold uppercase text-modelo-blue">
-                      Graph
-                    </h5>
-                  </div>
-                  <div className="p-3">
-                    <Graph width={270} height={180} />
-                  </div>
-                </div>
-                {/* <!--/Graph Card--> */}
-              </div>
-            </div>
-
-            <div className="h-1/2 mt-4 p-3">
-              {/* <!--Map Card--> */}
+      <div className="container mx-auto px-4 pt-6 flex-grow">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-grow">
+            <GraphSection />
+            <div className="mt-4">
               <CoordinatesMap defaultCenter={[51.505, -0.09]} />
-              {/* <!--/Map Card--> */}
             </div>
-            {/* <!--/ Console Content--> */}
           </div>
-
-          <div className="w-1/4 p-3 h-5/6">
-            {/* <!--Message Card--> */}
-            <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
-              <div className="border-b border-modelo-red p-3">
-                <h5 className="font-bold uppercase text-modelo-blue">
-                  Messages
-                </h5>
-              </div>
-            </div>
-            {/* <!--/Message Card--> */}
+          <div className="md:w-1/4">
+            <MessageSection />
           </div>
         </div>
       </div>
-      {/* <!--/container--> */}
       <Footer />
     </div>
   );
 }
+
+const GraphSection = () => (
+  <div className="gap-4 grid grid-cols-1 md:grid-cols-3">
+    <Card title="Temperature">
+      <Graph />
+    </Card>
+    <Card title="Humidity">
+      <Graph />
+    </Card>
+    <Card title="Pressure">
+      <Graph />
+    </Card>
+  </div>
+);
+
+const MessageSection = () => (
+  <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
+    <div className="border-b border-modelo-red p-3">
+      <h5 className="font-bold uppercase text-modelo-blue">Messages</h5>
+    </div>
+  </div>
+);
