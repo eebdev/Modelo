@@ -22,14 +22,15 @@ export default function Home() {
 
   const [user, loading, error] = useAuthState(auth);
 
-  // useEffect(() => {
-  //   if (!loading && user == null) {
-  //     router.push("/");
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!user && !loading) {
+      router.push("/");
+    }
+  }, [user, loading]);
 
-  if (loading) return <div>Loading...</div>;
-
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="font-sans leading-normal tracking-normal h-screen flex flex-col">
