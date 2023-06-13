@@ -33,7 +33,7 @@ export default function Home() {
 
   return (
     <div className="font-sans leading-normal tracking-normal h-screen flex flex-col">
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="container mx-auto px-4 pt-6 flex-grow">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-grow">
@@ -47,7 +47,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
