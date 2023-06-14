@@ -52,7 +52,7 @@ export default function Navbar() {
   return (
     <nav
       id="header"
-      className="bg-gray-900 fixed w-full z-[10000] top-0 shadow px-2 md:px-8"
+      className="bg-gray-900 w-full z-[10000] top-0 shadow px-2 md:px-8"
     >
       <div className="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3 md:pb-0">
         <div className="w-1/2 pl-2 md:pl-0">
@@ -145,8 +145,8 @@ export default function Navbar() {
               </button>
             </div>
             {openMenu && (
-              <div className="lg:hidden absolute top-8 z-50">
-                <div className="flex flex-col bg-gray-900 w-screen px-2 py-1 gap-4">
+              <div className="lg:hidden absolute top-8 right-0 z-50">
+                <div className="flex flex-col bg-gray-900 w-full px-8 py-4 gap-4">
                   {links.map((link) => (
                     <Link
                       className="bg-gray-900 text-gray-100"

@@ -19,7 +19,8 @@ export default function Footer() {
                 <li>
                   <a
                     className="inline-block text-modelo-brown no-underline hover:text-modelo-yellow hover:text-underline py-1"
-                    href="#"
+                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                    target="_blank"
                   >
                     Instagram
                   </a>
@@ -27,7 +28,8 @@ export default function Footer() {
                 <li>
                   <a
                     className="inline-block text-modelo-brown no-underline hover:text-modelo-yellow hover:text-underline py-1"
-                    href="#"
+                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                    target="_blank"
                   >
                     Facebook
                   </a>
@@ -35,7 +37,8 @@ export default function Footer() {
                 <li>
                   <a
                     className="inline-block text-modelo-brown no-underline hover:text-modelo-yellow hover:text-underline py-1"
-                    href="#"
+                    href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                    target="_blank"
                   >
                     Twitter
                   </a>

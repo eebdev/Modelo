@@ -1,19 +1,52 @@
-import { ReactNode, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
-export default function Card({ children, title }: { children: ReactNode; title: string; }) {
-  const cardRef = useRef<HTMLElement>(null);
+export default function Card({
+  children,
+  title,
+}: {
+  children: ReactNode;
+  title: string;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [fullscreen, setFullscreen] = useState(false);
 
-  const handleFullscreen = () => {
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setFullscreen(document.fullscreenElement !== null);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
     if (cardRef.current) {
-      cardRef.current.requestFullscreen();
+      if (!fullscreen) {
+        cardRef.current.requestFullscreen().catch((error) => {
+          console.error("Error attempting to enable fullscreen:", error);
+        });
+      } else {
+        document.exitFullscreen();
+      }
     }
   };
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded shadow p-2 h-80" ref={cardRef}>
+    <div
+      className="bg-gray-900 border border-gray-800 rounded shadow p-2 h-80"
+      ref={cardRef}
+    >
       <div className="border-b border-gray-800 p-3 flex justify-between items-center">
         <h5 className="font-bold uppercase text-gray-600">{title}</h5>
-        <button onClick={handleFullscreen} className="text-gray-600 hover:text-gray-500 duration-200"> Fullscreen</button>
+        <button
+          onClick={toggleFullscreen}
+          className="text-gray-600 hover:text-gray-500 duration-200"
+        >
+          {fullscreen ? "Exit Fullscreen" : "Fullscreen"}
+        </button>
       </div>
       <div className="p-5">{children}</div>
     </div>
