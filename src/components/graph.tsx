@@ -16,15 +16,12 @@ type GraphProps = {
 
 const Graph = ({ data }: { data: GraphProps[] }) => {
   return (
-    <div className="h-60">
+    <div className="h-60 mt-4">
       <ResponsiveContainer>
         <LineChart
           data={data}
           margin={{
             top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />

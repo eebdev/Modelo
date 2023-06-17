@@ -27,6 +27,7 @@
     "react-dom": "18.2.0",
     "react-firebase-hooks": "^5.1.1",
     "react-leaflet": "^4.2.1",
+    "react-native": "^0.71.11",
     "react-select": "^5.7.2",
     "recharts": "^2.6.2",
     "typescript": "5.0.2",

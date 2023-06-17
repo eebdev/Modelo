@@ -10,23 +10,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 const links = [
   {
     text: "Home",
-    href: "/",
+    href: "/dashboard",
   },
   {
-    text: "Tasks",
-    href: "/tasks",
-  },
-  {
-    text: "Messages",
-    href: "/messages",
-  },
-  {
-    text: "Analytics",
-    href: "/analytics",
-  },
-  {
-    text: "Payments",
-    href: "/payments",
+    text: "Search",
+    href: "/search",
   },
 ];
 
@@ -41,7 +29,7 @@ export default function Navbar() {
   const router = useRouter();
   const path = router.pathname;
 
-  const prepend = "/dashboard";
+  const prepend = "";
 
   function logout() {
     signOut(auth).then(() => {

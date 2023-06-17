@@ -25,17 +25,17 @@ export default function Home() {
 
   const [data, setData] = useState<StationData[]>([]);
 
-  // useEffect(() => {
-  //   if (!user && !loading) {
-  //     router.push("/");
-  //   }
-  // }, [user, loading]);
+  useEffect(() => {
+    if (!user && !loading) {
+      router.push("/");
+    }
+  }, [user, loading]);
 
   useEffect(() => {
     if (user) {
       // start is 3 days ago
       const start = new Date();
-      start.setDate(start.getDate() - 3);
+      start.setDate(start.getDate() - 365);
       const end = new Date();
 
       fetch("/api/data?id=100200&start=" + start + "&end=" + end)
@@ -45,7 +45,7 @@ export default function Home() {
   }, [user]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center">Loading...</div>;
   }
 
   if (error) {
@@ -86,9 +86,17 @@ const GraphSection = ({ data }: { data: StationData[] }) => {
     datetime: new Date(d.datetime).toLocaleTimeString(),
     uv: parseFloat(d.temp),
   }));
-  console.log(temperature);
-  const humidity = data.map((d) => d.prcp);
-  const blueSky = data.map((d) => d.visib);
+  const humidity = data.map((d) => ({
+    datetime: new Date(d.datetime).toLocaleTimeString(),
+    uv:
+      100 *
+      (Math.exp((17.625 * Number(d.dewp) / (243.04 + Number(d.dewp)) /
+        Math.exp((17.625 * Number(d.temp)) / (243.04 + Number(d.temp)))))),
+  }));
+  const blueSky = data.map((d) => ({
+    datetime: new Date(d.datetime).toLocaleTimeString(),
+    uv: parseFloat(d.cldc),
+  }));
 
   return (
     <div className="gap-4 grid grid-cols-1 md:grid-cols-3">
@@ -96,10 +104,10 @@ const GraphSection = ({ data }: { data: StationData[] }) => {
         <Graph data={temperature} />
       </Card>
       <Card title="Humidity">
-        <Graph />
+        <Graph data={humidity} />
       </Card>
       <Card title="Blue Sky">
-        <Graph />
+        <Graph data={blueSky} />
       </Card>
     </div>
   );

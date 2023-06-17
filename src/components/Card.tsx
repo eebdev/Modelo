@@ -48,7 +48,7 @@ export default function Card({
           {fullscreen ? "Exit Fullscreen" : "Fullscreen"}
         </button>
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-1">{children}</div>
     </div>
   );
 }
