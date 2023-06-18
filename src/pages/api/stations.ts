@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
+import { station_data } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -33,6 +34,7 @@ export default async function stationSearch(
           city: true,
           station: true,
         },
+        take: 10,
       });
 
       // Formatteer de uitvoer voor consistentie

@@ -10,7 +10,7 @@ import {
 } from "recharts";
 
 type GraphProps = {
-  datetime: string;
+  name: string;
   uv: number;
 };
 
@@ -26,10 +26,9 @@ const Graph = ({ data }: { data: GraphProps[] }) => {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" stroke="#ffffff" />
-          <YAxis stroke="#ffffff" />
-          <Tooltip />
-          <Line type="monotone" dataKey="pv" stroke="#ffffff" />
+          <YAxis dataKey="uv" stroke="#ffffff" />=
           <Line type="monotone" dataKey="uv" stroke="#ffffff" />
+          <Tooltip />
         </LineChart>
       </ResponsiveContainer>
     </div>
