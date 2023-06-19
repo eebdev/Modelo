@@ -36,7 +36,7 @@ const Search = () => {
           value={search}
           onChange={handleSearch}
           placeholder="Search for stations..."
-          className="w-full px-3 py-2 mb-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent text-white border-gray-700 border-2"
+          className="w-full px-3 py-2 mb-2 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent text-gray border-gray-700 border-2"
         />
         {loading && <p className="absolute bottom-0 left-0 text-gray-500">Searching...</p>}
         <div className={`absolute top-16 left-0 rounded-md px-2 pb-2 ${results.length !== 0 ? "bg-gray-800" : "bg-transparent"}`}>
