@@ -5,7 +5,7 @@ import { station_data } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export default async function stationSearch(
-  req: NextApiRequest,
+  req: NextApiRequest, 
   res: NextApiResponse<{ message: string; data?: station_data[] }>
 ): Promise<void> {
   // Controleer of het verzoek een GET-methode is

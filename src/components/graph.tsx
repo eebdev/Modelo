@@ -14,6 +14,20 @@ type GraphProps = {
   uv: number;
 };
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip bg-white">
+        <p className="label">{`${label} : ${
+          Math.round(payload[0].value * 100) / 100
+        }`}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
 const Graph = ({ data }: { data: GraphProps[] }) => {
   return (
     <div className="h-60 mt-4">
@@ -26,9 +40,9 @@ const Graph = ({ data }: { data: GraphProps[] }) => {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" stroke="#ffffff" />
-          <YAxis dataKey="uv" stroke="#ffffff" />=
+          <YAxis dataKey="uv" stroke="#ffffff" />
           <Line type="monotone" dataKey="uv" stroke="#ffffff" />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
         </LineChart>
       </ResponsiveContainer>
     </div>
