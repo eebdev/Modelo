@@ -29,6 +29,20 @@ export async function getStationDataByDateRange(
   });
 }
 
+export async function getDataByDateRange(
+  start_date: Date,
+  end_date: Date
+) {
+  return prisma.station_data.findMany({
+    where: {
+      datetime: {
+        gte: start_date,
+        lte: end_date,
+      },
+    },
+  });
+}
+
 export async function getWeatherStations() {
   return prisma.station_data.findMany({
     select: {

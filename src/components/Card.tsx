@@ -1,5 +1,17 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 
+function launchIntoFullscreen(element: { requestFullscreen: () => void; mozRequestFullScreen: () => void; webkitRequestFullscreen: () => void; msRequestFullscreen: () => void; }) {
+  if(element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if(element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if(element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if(element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  }
+}
+
 export default function Card({
   children,
   title,
@@ -25,9 +37,7 @@ export default function Card({
   const toggleFullscreen = () => {
     if (cardRef.current) {
       if (!fullscreen) {
-        cardRef.current.requestFullscreen().catch((error) => {
-          console.error("Error attempting to enable fullscreen:", error);
-        });
+        launchIntoFullscreen(cardRef.current);
       } else {
         document.exitFullscreen();
       }

@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Card from "@components/Card";
 import { StationData } from "@ctypes/types";
+import { saveAs } from "file-saver";
 
 const CoordinatesMap = dynamic(() => import("@components/CoordinatesMap"), {
   ssr: false,
@@ -24,6 +25,8 @@ export default function Home() {
   const [user, loading, error] = useAuthState(auth);
 
   const [data, setData] = useState<StationData[]>([]);
+  const [stationID, setStationID] = useState<string>("766790");
+  const [allData, setAllData] = useState<StationData[]>([]);
 
   useEffect(() => {
     if (!user && !loading) {
@@ -35,14 +38,14 @@ export default function Home() {
     if (user) {
       // start is 3 days ago
       const start = new Date();
-      start.setDate(start.getDate() - 365);
+      start.setDate(start.getDate() - 3);
       const end = new Date();
 
-      fetch("/api/data?id=100200&start=" + start + "&end=" + end)
+      fetch("/api/data?id=" + stationID + "&start=" + start + "&end=" + end)
         .then((res) => res.json())
         .then((data) => setData(data.data));
     }
-  }, [user]);
+  }, [user, stationID]);
 
   if (loading) {
     return <div className="text-center">Loading...</div>;
@@ -50,6 +53,18 @@ export default function Home() {
 
   if (error) {
     return <div>Error: {error.message}</div>;
+  }
+
+  function handleDownload(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    event.preventDefault();
+    
+    const start = new Date();
+    start.setDate(start.getDate() - 3);
+    const end = new Date();
+
+    fetch("/api/data?start=" + start + "&end=" + end).then((res) => res.json()).then((data) => setAllData(data.data));
+    const blob = new Blob([JSON.stringify(allData)], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "data.txt");
   }
 
   return (
@@ -61,8 +76,11 @@ export default function Home() {
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-grow">
                 <GraphSection data={data} />
+                <button onClick={handleDownload} className="bg-modelo-blue text-xl text-white px-2 py-1 m-5 rounded">
+                  Download data 
+                </button>
                 <div className="mt-4">
-                  <CoordinatesMap defaultCenter={[51.505, -0.09]} />
+                  <CoordinatesMap defaultCenter={[19.454823, -99.131099]} setStationID={setStationID} defaultZoom={10}/>
                 </div>
               </div>
               <div className="md:w-1/4">
@@ -115,6 +133,19 @@ const MessageSection = () => (
   <div className="bg-modelo-yellow border border-modelo-red rounded shadow h-full">
     <div className="border-b border-modelo-red p-3">
       <h5 className="font-bold uppercase text-modelo-blue">Messages</h5>
+
+      <div className="flex justify-between items-center pb-5">
+        <h2 className="text-xl text-modelo-blue">Cloud coverage is high <br />{">"} 80%</h2>
+        <button className="bg-modelo-blue text-white px-2 py-1 rounded">
+          View
+        </button>
+      </div>
+      <div className="flex justify-between items-center pb-5">
+        <h2 className="text-xl text-modelo-blue">High chance of rain <br />{">"} 92%</h2>
+        <button className="bg-modelo-blue text-white px-2 py-1 rounded">
+          View
+        </button>
+      </div>
     </div>
   </div>
 );

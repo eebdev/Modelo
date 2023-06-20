@@ -17,6 +17,7 @@
     "chart.js": "^4.2.1",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
+    "file-saver": "^2.0.5",
     "firebase": "^9.22.1",
     "leaflet": "^1.9.3",
     "leaflet.markercluster": "^1.5.3",
@@ -34,6 +35,7 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
     "@types/ws": "^8.5.4",
     "autoprefixer": "^10.4.14",
     "eslint-plugin-react-hooks": "^4.6.0",

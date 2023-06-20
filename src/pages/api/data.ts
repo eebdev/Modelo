@@ -1,6 +1,6 @@
 // Importeer de benodigde modules en database query-functie
 import { NextApiRequest, NextApiResponse } from "next";
-import { getStationData, getStationDataByDateRange } from "@database/queries";
+import { getStationData, getStationDataByDateRange, getDataByDateRange } from "@database/queries";
 import { StationData } from "@ctypes/types";
 import { station_data } from "@prisma/client";
 
@@ -20,15 +20,21 @@ export default async function dataReceiver(
   if (req.method === "GET") {
     if (
       req.query.start !== undefined &&
-      req.query.end !== undefined &&
-      req.query.id !== undefined
+      req.query.end !== undefined
     ) {
+      if (req.query.id !== undefined) {
       const id = Number(req.query.id);
       const start = new Date(req.query.start as string);
       const end = new Date(req.query.end as string);
       const data = await getStationDataByDateRange(id, start, end);
       res.status(200).json({ message: "OK", data: data });
     } else {
+      const start = new Date(req.query.start as string);
+      const end = new Date(req.query.end as string);
+      const data = await getDataByDateRange(start, end);
+      res.status(200).json({ message: "OK", data: data });
+    }}
+    else {
       res.status(400).json({ message: "Bad request" });
     }
   } else {
