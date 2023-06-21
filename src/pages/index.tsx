@@ -1,54 +1,71 @@
-import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { WeatherStation } from '@ctypes/types'
-import { useEffect, useState } from 'react'
-import Link from 'next/link';
+import { initializeApp } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { clientCredentials } from "@config/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+
+const app = initializeApp(clientCredentials);
+const auth = getAuth(app);
 
 export default function Home() {
-    const [stations, setStations] = useState<WeatherStation[]>([]);
-    const router = useRouter()
+  const router = useRouter();
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        fetch('/api/weatherstations')
-            .then((response) => response.json())
-            .then((data: WeatherStation[]) => setStations(data));
-    }, []);
+  const [user, loading, errorTemp] = useAuthState(auth);
 
-    const handleSelect = (event: any) => {
-        router.push(`/station/${event.target.value}`)
-    }
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
-    return (
-        <>
-            <Head>
-                <title>IWA</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-            </Head>
-            <main className="bg-white min-h-screen p-6">
-                <section className="flex flex-col items-center justify-center space-y-4">
-                    <div className="text-4xl font-bold text-gray-800">Choose a weatherstation</div>
-                    <div className="w-72">
-                        <select
-                            onChange={handleSelect}
-                            name="stations"
-                            id="stations"
-                            className="w-full p-2 text-lg border-2 border-gray-300 rounded-md focus:border-blue-300 focus:outline-none"
-                        >
-                            <option value="Choose a weatherstation">Choose a weatherstation</option>
-                            {stations.map((station) => (
-                                <option key={station.station_name} value={station.station_name}>
-                                    {station.station_name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <Link href={'/compare'}>
-                        <button className="iwa-button w-48 p-2 text-lg font-semibold rounded-md focus:outline-none">
-                            Compare weatherstations
-                        </button>
-                    </Link>
-                </section>
-            </main>
-        </>
-    )
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const email = e.currentTarget.email.value;
+    const password = e.currentTarget.password.value;
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user);
+        router.push("/dashboard");
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        setError(errorMessage);
+      });
+  }
+
+  return (
+    <div className="h-screen w-screen flex justify-center items-center flex-col text-white text-2xl gap-4">
+      <h1>Login</h1>
+      <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
+        {error !== "" && (
+          <div className="text-red-500 text-lg w-full text-center">
+            {error}
+          </div>
+        )}
+        <input
+          type="email"
+          placeholder="Email"
+          name="email"
+          className="bg-gray-100 py-1 px-1 rounded-md text-gray-900"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          name="password"
+          className="bg-gray-100 py-1 px-1 rounded-md text-gray-900"
+          required
+        />
+        <button
+          className="border-2 border-gray-100 rounded-md text-xl py-1 hover:bg-gray-100 hover:text-gray-900 duration-200"
+          type="submit"
+        >
+          Login
+        </button>
+      </form>
+    </div>
+  );
 }
