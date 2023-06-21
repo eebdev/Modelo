@@ -57,7 +57,7 @@ export default function Station() {
     const blob = new Blob([JSON.stringify(data)], {
       type: "text/plain;charset=utf-8",
     });
-    saveAs(blob, "data.txt");
+    saveAs(blob, "data.json");
   }
 
   const CoordinatesMap = dynamic(() => import("@components/CoordinatesMap"), {

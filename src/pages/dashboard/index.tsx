@@ -27,6 +27,7 @@ export default function Home() {
   const [data, setData] = useState<StationData[]>([]);
   const [stationID, setStationID] = useState<string>("766790");
   const [allData, setAllData] = useState<StationData[]>([]);
+  const [name, setName] = useState<string>("");
 
   useEffect(() => {
     if (!user && !loading) {
@@ -44,6 +45,10 @@ export default function Home() {
       fetch("/api/data?id=" + stationID + "&start=" + start + "&end=" + end)
         .then((res) => res.json())
         .then((data) => setData(data.data));
+
+      fetch("/api/station?id=" + stationID)
+        .then((res) => res.json())
+        .then((data) => setName(data.data.name));
     }
   }, [user, stationID]);
 
@@ -55,16 +60,22 @@ export default function Home() {
     return <div>Error: {error.message}</div>;
   }
 
-  function handleDownload(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+  function handleDownload(
+    event: MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
     event.preventDefault();
-    
+
     const start = new Date();
     start.setDate(start.getDate() - 3);
     const end = new Date();
 
-    fetch("/api/data?start=" + start + "&end=" + end).then((res) => res.json()).then((data) => setAllData(data.data));
-    const blob = new Blob([JSON.stringify(allData)], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, "data.txt");
+    fetch("/api/data?start=" + start + "&end=" + end)
+      .then((res) => res.json())
+      .then((data) => setAllData(data.data));
+    const blob = new Blob([JSON.stringify(allData)], {
+      type: "text/plain;charset=utf-8",
+    });
+    saveAs(blob, "data.json");
   }
 
   return (
@@ -75,12 +86,22 @@ export default function Home() {
           <div className="container mx-auto px-4 pt-6 flex-grow">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-grow">
+                <h3 className=" text-xl text-white px-2 py-1 m-5 rounded">
+                  {name}
+                </h3>
                 <GraphSection data={data} />
-                <button onClick={handleDownload} className="bg-modelo-blue text-xl text-white px-2 py-1 m-5 rounded">
-                  Download data 
+                <button
+                  onClick={handleDownload}
+                  className="bg-modelo-blue text-xl text-white px-2 py-1 m-5 rounded"
+                >
+                  Download data
                 </button>
                 <div className="mt-4">
-                  <CoordinatesMap defaultCenter={[19.454823, -99.131099]} setStationID={setStationID} defaultZoom={10}/>
+                  <CoordinatesMap
+                    defaultCenter={[19.454823, -99.131099]}
+                    setStationID={setStationID}
+                    defaultZoom={10}
+                  />
                 </div>
               </div>
               <div className="md:w-1/4">
@@ -107,8 +128,11 @@ const GraphSection = ({ data }: { data: StationData[] }) => {
     name: new Date(d.datetime).toLocaleDateString(),
     uv:
       100 *
-      (Math.exp((17.625 * Number(d.dewp) / (243.04 + Number(d.dewp)) /
-        Math.exp((17.625 * Number(d.temp)) / (243.04 + Number(d.temp)))))),
+      Math.exp(
+        (17.625 * Number(d.dewp)) /
+          (243.04 + Number(d.dewp)) /
+          Math.exp((17.625 * Number(d.temp)) / (243.04 + Number(d.temp)))
+      ),
   }));
   const blueSky = data.map((d) => ({
     name: new Date(d.datetime).toLocaleDateString(),
@@ -135,13 +159,19 @@ const MessageSection = () => (
       <h5 className="font-bold uppercase text-modelo-blue">Messages</h5>
 
       <div className="flex justify-between items-center pb-5">
-        <h2 className="text-xl text-modelo-blue">Cloud coverage is high <br />{">"} 80%</h2>
+        <h2 className="text-xl text-modelo-blue">
+          Cloud coverage is high <br />
+          {">"} 80%
+        </h2>
         <button className="bg-modelo-blue text-white px-2 py-1 rounded">
           View
         </button>
       </div>
       <div className="flex justify-between items-center pb-5">
-        <h2 className="text-xl text-modelo-blue">High chance of rain <br />{">"} 92%</h2>
+        <h2 className="text-xl text-modelo-blue">
+          High chance of rain <br />
+          {">"} 92%
+        </h2>
         <button className="bg-modelo-blue text-white px-2 py-1 rounded">
           View
         </button>
