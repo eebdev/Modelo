@@ -7,6 +7,8 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Search from "@components/search";
+import Image from 'next/image'
+import logo from '../../public/grupomodelo.png'
 
 const links = [
   {
@@ -45,7 +47,7 @@ export default function Navbar() {
             className="text-gray-100 text-base xl:text-xl no-underline hover:no-underline font-bold"
             href="/dashboard"
           >
-            Modello Cerveza
+            <Image src={logo} alt="Grupo Modelo" width={100} height={100} />
           </Link>
         </div>
         <div className="w-1/2 pr-0">
